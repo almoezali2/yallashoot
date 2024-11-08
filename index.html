@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title> اللاعبين</title>
+    <title>مترجم اللاعبين</title>
     <link rel="icon" href="https://admincp.ysscores.com/assets/images/brand/favicon.ico" type="image/x-icon">
     <style>
         body {
@@ -162,6 +162,7 @@
             display: inline-block;
             overflow: hidden;
             white-space: nowrap;
+            padding-right: 10px; /* ترك مجال لبداية الاسم */
         }
 
     </style>
@@ -212,13 +213,7 @@
             "anthony": "أنتوني",
             "william": "ويليام",
             "mark": "مارك",
-            "mark": "مارك",
-            "mark": "مارك",
-            "mark": "مارك",
             "thomas": "توماس",
-            "thomas": "توماس",
-            "william": "ويليام",
-            "william": "ويليام",
             "mesi": "ميسي"
         };
 
@@ -287,8 +282,8 @@
                 setTimeout(() => {
                     extraInfoDiv.innerHTML = `في الماركت <a href="https://www.google.com/search?q=${encodeURIComponent(input)}+Transfermarkt" target="_blank">بالضغط هنا <img src="https://www.transfermarkt.com/favicon-16x16.png" alt="ماركت"></a> وصورته <a href="https://www.google.com/search?q=${encodeURIComponent(input)}+site:sortitoutsi.net" target="_blank">بالضغط هنا <img src="https://sortitoutsi.net/assets/icons/favicon-57.png" alt="صور"></a>`;
                     extraInfoDiv.classList.add('show');
-                }, 1700);
-            }, 500);
+                }, 1700); // تأخير إضافي 2 ثانية
+            }, 1200); // تأخير بداية الرسالة
         }
     </script>
 </body>
