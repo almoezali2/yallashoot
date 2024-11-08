@@ -142,7 +142,7 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             text-align: center;
             border: 1px solid #b0bec5;
-            margin-bottom: 40px; /* تم إضافة مسافة أسفل مربع الترجمة */
+            margin-bottom: 40px;
         }
 
         input[type="text"] {
@@ -169,19 +169,12 @@
             padding-right: 10px;
         }
 
-        /* إعدادات قسم الاسم المختصر */
         .short-name-container {
             display: none;
             color: #333;
             opacity: 0;
-            transition: opacity 2s ease-in; /* تم إضافة انتقال لتأثير الظهور */
-            margin-bottom: 40px; /* تم إضافة مسافة أسفل مربع الاسم المختصر */
-        }
-
-        .short-name-section-title {
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 10px;
+            transition: opacity 2s ease-in;
+            margin-bottom: 40px;
         }
 
         .short-name-english-label,
@@ -216,7 +209,7 @@
 
     <h1>مترجم اللاعبين</h1>
 
-    <div id="infoMessageContainer" class="info-message-container" style="display: none;"> <!-- تم إخفاء المربع في البداية -->
+    <div id="infoMessageContainer" class="info-message-container" style="display: none;">
         <div id="infoMessage" class="typing-animation"></div>
         <div id="extraInfo" class="fade-in-animation"></div>
     </div>
@@ -226,7 +219,6 @@
         <div id="result"></div>
     </div>
     
-    <!-- قسم لعرض الاسم المختصر -->
     <div id="shortNameContainer" class="short-name-container">
         <div class="short-name-english-label">الاسم المختصر بالإنجليزي</div>
         <div id="shortNameEnglish" class="short-name-english"></div>
@@ -256,8 +248,9 @@
             "Arnold": "أرنولد",
             "Alexander": "ألكساندر",
             "El Bakari": "ألبكاري",
-            "El-Badaoui": "ألبجدادي",
-            "Al-Malki": "ألمالكي"
+            "El-Badaoui": "ألبدوي",
+            "Al-Malki": "ألمالكي",
+            "El Karouani": "الكراوني"
         };
 
         const letterMapping = {
@@ -277,7 +270,6 @@
             "Ê": "ي", "Â": "ا", "Û": "و", "õ": "و", "ē": "ي", "ū": "و"
         };
 
-        let lastInput = "";
         let timeoutId;
 
         function translateName() {
@@ -288,7 +280,6 @@
             const extraInfoDiv = document.getElementById("extraInfo");
             const shortNameContainer = document.getElementById("shortNameContainer");
 
-            // إخفاء مربع الاسم المختصر وإعادة تعيين العتامة
             shortNameContainer.style.display = 'none';
             shortNameContainer.style.opacity = '0';
 
@@ -318,25 +309,31 @@
 
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
-                displayShortName(input);
+                displayShortName(input, translatedName);
             }, 4000);
         }
 
         function translateComplexName(name) {
-            const words = name.split(/[\s-]+/);
+            const words = name.split(/\s+/); // تم تعديل التعبير النمطي هنا
             let translatedName = "";
-            let previousWasPrefix = false;
+            let i = 0;
 
-            words.forEach((word, index) => {
-                if (word.toLowerCase() === "al" || word.toLowerCase() === "el") {
-                    translatedName += "ال";
-                    previousWasPrefix = true;
-                } else {
-                    translatedName += translateIndividualWord(word);
-                    previousWasPrefix = false;
+            while (i < words.length) {
+                let foundMatch = false;
+                for (let j = words.length; j > i; j--) {
+                    const phrase = words.slice(i, j).join(' ');
+                    if (nameData[phrase]) {
+                        translatedName += nameData[phrase] + " ";
+                        i = j;
+                        foundMatch = true;
+                        break;
+                    }
                 }
-                if (index < words.length - 1 && !previousWasPrefix) translatedName += " ";
-            });
+                if (!foundMatch) {
+                    translatedName += translateIndividualWord(words[i]) + " ";
+                    i++;
+                }
+            }
 
             return translatedName.trim();
         }
@@ -346,14 +343,25 @@
             return Array.from(word).map(char => letterMapping[char.toLowerCase()] || char).join('');
         }
 
-        function displayShortName(input) {
-            const words = input.split(/[\s-]+/);
+        function displayShortName(input, translatedName) {
+            const translatedWords = translatedName.split(/\s+/);
+            const lastArabicWord = translatedWords[translatedWords.length - 1];
+
+            const words = input.split(/\s+/); // تم تعديل التعبير النمطي هنا
             let lastEnglishWord = words[words.length - 1];
-            if ((words[words.length - 2] && (words[words.length - 2].toLowerCase() === "al" || words[words.length - 2].toLowerCase() === "el"))) {
+
+            if (words.length >= 2 && (words[words.length - 2].toLowerCase() === "al" || words[words.length - 2].toLowerCase() === "el")) {
                 lastEnglishWord = words[words.length - 2] + " " + lastEnglishWord;
+            } else {
+                for (let i = words.length - 2; i >= 0; i--) {
+                    const phrase = words.slice(i, words.length).join(' ');
+                    if (nameData[phrase]) {
+                        lastEnglishWord = phrase;
+                        break;
+                    }
+                }
             }
 
-            const lastArabicWord = translateComplexName(lastEnglishWord);
             const shortNameContainer = document.getElementById("shortNameContainer");
             document.getElementById("shortNameEnglish").innerHTML = lastEnglishWord;
             document.getElementById("shortNameArabic").innerHTML = lastArabicWord;
@@ -361,7 +369,7 @@
             shortNameContainer.style.display = 'block';
             setTimeout(() => {
                 shortNameContainer.style.opacity = '1';
-            }, 50); // تأخير بسيط لتطبيق الانتقال
+            }, 50);
         }
     </script>
 </body>
