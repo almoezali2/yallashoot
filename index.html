@@ -2,13 +2,13 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>عرض تفاصيل فيديو يوتيوب</title>
+    <title>عرض تفاصيل تغريدة تويتر</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             direction: rtl;
             margin: 0;
-            background-color: #f0f8ff; /* خلفية سماوية فاتحة */
+            background-color: #f0f8ff;
         }
         .container {
             max-width: 800px;
@@ -32,267 +32,106 @@
         button {
             padding: 11px 20px;
             font-size: 16px;
-            background-color: #4682b4; /* أزرق سماوي */
+            background-color: #1da1f2;
             color: #fff;
             border: none;
             border-radius: 8px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #5a9bd3;
+            background-color: #0d95e8;
         }
         .result-container {
             display: flex;
             align-items: flex-start;
-            background-color: #f0f8ff; /* نفس لون الخلفية */
+            background-color: #f0f8ff;
             border: 1px solid #b0c4de;
             border-radius: 8px;
             overflow: hidden;
         }
-        .link-box, .video-box {
+        .link-box, .tweet-box {
             flex: 1;
             padding: 20px;
         }
         .link-box {
-            background-color: #e6f0fa; /* خلفية سماوية فاتحة */
+            background-color: #e6f0fa;
             border-right: 1px solid #b0c4de;
         }
-        .video-box {
-            background-color: #f0f8ff; /* خلفية سماوية فاتحة */
+        .tweet-box {
+            background-color: #f0f8ff;
             display: flex;
-            align-items: center; /* لمحاذاة المحتوى عمودياً في الوسط */
-            justify-content: center; /* لمحاذاة المحتوى أفقياً في الوسط */
-        }
-        .link-item {
-            display: flex;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
-            flex-direction: row;
-            position: relative;
-        }
-        .link-item:last-child {
-            margin-bottom: 0;
-        }
-        .language-label {
-            font-weight: bold;
-            text-align: center;
-            margin-right: 10px;
-            color: #000000; /* لون النص أسود */
-            text-transform: lowercase;
-            background: none; /* إزالة الخلفية */
-        }
-        .link-text {
-            flex: 1;
-            font-size: 16px;
-            color: #333;
-            word-wrap: break-word;
-            line-height: 1.4;
-        }
-        .delete-button, .send-button {
-            width: 20px;
-            height: 20px;
-            background-size: contain;
-            border: none;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        .delete-button {
-            background: url('https://f.top4top.io/p_3235fmx5r1.png') no-repeat center center;
-        }
-        .send-button {
-            background: url('https://f.top4top.io/p_3235fmx5r1.png') no-repeat center center;
-        }
-        .separator {
-            height: 1px;
-            background-color: #b0c4de;
-            margin: 5px 0;
-        }
-        .video-content {
-            display: flex;
-            align-items: center;
-        }
-        .video-content img {
-            width: 120px;
-            height: 90px;
-            border-radius: 8px;
-            margin-left: 15px;
-            object-fit: cover;
-        }
-        .video-title {
-            flex: 1;
-            font-size: 18px;
-            color: #333;
-            word-wrap: break-word;
-            line-height: 1.4;
-            text-align: right;
+            min-height: 300px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>ملخص المباراة</h1>
+        <h1>عرض تفاصيل تغريدة تويتر</h1>
         <div class="input-group">
-            <input type="text" id="youtubeUrl" placeholder="أدخل رابط فيديو يوتيوب">
+            <input type="text" id="twitterUrl" placeholder="أدخل رابط تغريدة تويتر">
             <button id="saveButton">حفظ</button>
         </div>
 
         <div class="result-container" id="resultContainer" style="display: none;">
             <div class="link-box" id="linkBox">
-                <!-- روابط متعددة مع تسميات اللغات -->
-                <div class="link-item" id="linkItemEn">
-                    <p class="link-text" id="linkTextEn"></p>
-                    <button class="send-button" data-lang="en"></button>
-                    <button class="delete-button" data-lang="en"></button>
-                    <span class="language-label">en</span>
-                </div>
-                <div class="separator"></div>
-                <div class="link-item" id="linkItemAr">
-                    <p class="link-text" id="linkTextAr"></p>
-                    <button class="send-button" data-lang="ar"></button>
-                    <button class="delete-button" data-lang="ar"></button>
-                    <span class="language-label">ar</span>
-                </div>
-                <div class="separator"></div>
-                <div class="link-item" id="linkItemEs">
-                    <p class="link-text" id="linkTextEs"></p>
-                    <button class="send-button" data-lang="es"></button>
-                    <button class="delete-button" data-lang="es"></button>
-                    <span class="language-label">es</span>
-                </div>
-                <div class="separator"></div>
-                <div class="link-item" id="linkItemFr">
-                    <p class="link-text" id="linkTextFr"></p>
-                    <button class="send-button" data-lang="fr"></button>
-                    <button class="delete-button" data-lang="fr"></button>
-                    <span class="language-label">fr</span>
-                </div>
+                <p class="link-text" id="linkTextEn"></p>
+                <p class="link-text" id="linkTextAr"></p>
+                <p class="link-text" id="linkTextEs"></p>
+                <p class="link-text" id="linkTextFr"></p>
             </div>
-            <div class="video-box" id="videoBox">
-                <div class="video-content">
-                    <img id="thumbnail" src="" alt="صورة مصغرة للفيديو">
-                    <p class="video-title" id="videoTitle"></p>
-                </div>
+            <div class="tweet-box" id="tweetBox">
+                <!-- سيتم عرض تضمين التغريدة هنا -->
             </div>
         </div>
     </div>
 
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script>
         document.getElementById('saveButton').addEventListener('click', function() {
-            const url = document.getElementById('youtubeUrl').value.trim();
+            const url = document.getElementById('twitterUrl').value.trim();
             if (url === '') {
-                alert('الرجاء إدخال رابط فيديو يوتيوب.');
+                alert('الرجاء إدخال رابط تغريدة تويتر.');
                 return;
             }
 
-            const videoId = extractVideoID(url);
-            if (!videoId) {
-                alert('الرابط المدخل غير صالح.');
-                return;
-            }
-
-            // عرض الرابط في الصندوق على اليمين
             document.getElementById('linkTextEn').textContent = url;
             document.getElementById('linkTextAr').textContent = url;
             document.getElementById('linkTextEs').textContent = url;
             document.getElementById('linkTextFr').textContent = url;
 
-            // إظهار جميع الروابط
-            document.getElementById('linkItemEn').style.display = 'flex';
-            document.getElementById('linkItemAr').style.display = 'flex';
-            document.getElementById('linkItemEs').style.display = 'flex';
-            document.getElementById('linkItemFr').style.display = 'flex';
-
-            // إظهار الفواصل
-            const separators = document.querySelectorAll('.separator');
-            separators.forEach(separator => separator.style.display = 'block');
-
-            fetchVideoDetails(videoId);
-        });
-
-        function extractVideoID(url) {
-            const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            const match = url.match(regex);
-            return match ? match[1] : null;
-        }
-
-        function fetchVideoDetails(videoId) {
-            const apiKey = 'AIzaSyDnJIGw-kq7dwxNDbRJ7R-hFJ34W5qJbFQ'; // استبدل هذا بمفتاح API الخاص بك
-            const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`;
-
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.items && data.items.length > 0) {
-                        const videoTitle = data.items[0].snippet.title;
-                        const thumbnailUrl = data.items[0].snippet.thumbnails.default.url;
-
-                        displayVideoDetails(videoTitle, thumbnailUrl);
-                    } else {
-                        alert('لم يتم العثور على الفيديو.');
-                    }
-                })
-                .catch(error => {
-                    console.error('حدث خطأ أثناء جلب بيانات الفيديو:', error);
-                    alert('حدث خطأ أثناء جلب بيانات الفيديو.');
-                });
-        }
-
-        function displayVideoDetails(title, thumbnailUrl) {
-            document.getElementById('videoTitle').textContent = title;
-            document.getElementById('thumbnail').src = thumbnailUrl;
-
-            // عرض صندوق النتائج
             document.getElementById('resultContainer').style.display = 'flex';
-        }
 
-        // إضافة أحداث للنقر على أزرار الحذف والإرسال
-        const deleteButtons = document.querySelectorAll('.delete-button');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const lang = this.getAttribute('data-lang');
-                const linkItem = document.getElementById(`linkItem${capitalizeFirstLetter(lang)}`);
-                linkItem.style.display = 'none';
-
-                // إخفاء الفاصل بعد العنصر المحذوف
-                const nextElement = linkItem.nextElementSibling;
-                if (nextElement && nextElement.classList.contains('separator')) {
-                    nextElement.style.display = 'none';
-                }
-
-                // التحقق مما إذا كانت جميع الروابط مخفية
-                checkIfAllLinksHidden();
-            });
+            embedTweet(url);
         });
 
-        const sendButtons = document.querySelectorAll('.send-button');
-        sendButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                if (confirm('هل تريد حقاً إرسال الإشعار؟')) {
-                    // تنفيذ الإجراء عند اختيار "نعم"
-                    alert('تم إرسال الإشعار.');
-                } else {
-                    // لا تفعل شيئًا عند اختيار "لا"
-                }
-            });
-        });
+        function embedTweet(tweetUrl) {
+            const tweetBox = document.getElementById('tweetBox');
+            tweetBox.innerHTML = ''; // مسح المحتوى السابق
 
-        function checkIfAllLinksHidden() {
-            const linkItems = document.querySelectorAll('.link-item');
-            const allHidden = Array.from(linkItems).every(item => item.style.display === 'none');
+            // استخراج معرف التغريدة من الرابط
+            const tweetIdMatch = tweetUrl.match(/status\/(\d+)/);
+            if (tweetIdMatch && tweetIdMatch[1]) {
+                const tweetId = tweetIdMatch[1];
 
-            if (allHidden) {
-                // إخفاء صندوق النتائج
-                document.getElementById('resultContainer').style.display = 'none';
-
-                // مسح بيانات الفيديو
-                document.getElementById('videoTitle').textContent = '';
-                document.getElementById('thumbnail').src = '';
+                // استخدام مكتبة Twitter لتضمين التغريدة
+                twttr.widgets.createTweet(
+                    tweetId,
+                    tweetBox,
+                    {
+                        lang: 'ar'
+                    }
+                ).then(function (el) {
+                    console.log("تغريدة تم تضمينها بنجاح.");
+                }).catch(function (error) {
+                    console.error("خطأ في تضمين التغريدة:", error);
+                    alert("لم يتم تضمين التغريدة. تأكد من صحة الرابط.");
+                });
+            } else {
+                alert("رابط التغريدة غير صالح. يرجى إدخال رابط صحيح.");
             }
-        }
-
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
         }
     </script>
 
