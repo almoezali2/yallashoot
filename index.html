@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>عرض تفاصيل تغريدة تويتر</title>
+    <title>ملخص المباراة</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,19 +27,6 @@
             border: 1px solid #b0c4de;
             border-radius: 8px;
             background-color: #fff;
-            margin-left: 10px;
-        }
-        button {
-            padding: 11px 20px;
-            font-size: 16px;
-            background-color: #1da1f2;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0d95e8;
         }
         .result-container {
             display: flex;
@@ -49,13 +36,11 @@
             border-radius: 8px;
             overflow: hidden;
         }
-        .link-box, .tweet-box {
-            flex: 1;
-            padding: 20px;
-        }
         .link-box {
             background-color: #e6f0fa;
             border-right: 1px solid #b0c4de;
+            padding: 20px;
+            width: 30%;
         }
         .tweet-box {
             background-color: #f0f8ff;
@@ -63,6 +48,13 @@
             justify-content: center;
             align-items: center;
             min-height: 300px;
+            width: 70%;
+        }
+        .tweet-box iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -72,7 +64,6 @@
         <h1>عرض تفاصيل تغريدة تويتر</h1>
         <div class="input-group">
             <input type="text" id="twitterUrl" placeholder="أدخل رابط تغريدة تويتر">
-            <button id="saveButton">حفظ</button>
         </div>
 
         <div class="result-container" id="resultContainer" style="display: none;">
@@ -90,22 +81,22 @@
 
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script>
-        document.getElementById('saveButton').addEventListener('click', function() {
+        document.getElementById('twitterUrl').addEventListener('input', function() {
             const url = document.getElementById('twitterUrl').value.trim();
-            if (url === '') {
-                alert('الرجاء إدخال رابط تغريدة تويتر.');
-                return;
+            if (url !== '') {
+                displayTweet(url);
             }
+        });
 
-            document.getElementById('linkTextEn').textContent = url;
-            document.getElementById('linkTextAr').textContent = url;
-            document.getElementById('linkTextEs').textContent = url;
-            document.getElementById('linkTextFr').textContent = url;
+        function displayTweet(tweetUrl) {
+            document.getElementById('linkTextEn').textContent = tweetUrl;
+            document.getElementById('linkTextAr').textContent = tweetUrl;
+            document.getElementById('linkTextEs').textContent = tweetUrl;
+            document.getElementById('linkTextFr').textContent = tweetUrl;
 
             document.getElementById('resultContainer').style.display = 'flex';
-
-            embedTweet(url);
-        });
+            embedTweet(tweetUrl);
+        }
 
         function embedTweet(tweetUrl) {
             const tweetBox = document.getElementById('tweetBox');
@@ -121,7 +112,9 @@
                     tweetId,
                     tweetBox,
                     {
-                        lang: 'ar'
+                        lang: 'ar',
+                        width: 300, // ضبط عرض التغريدة
+                        height: 300 // ضبط ارتفاع التغريدة
                     }
                 ).then(function (el) {
                     console.log("تغريدة تم تضمينها بنجاح.");
