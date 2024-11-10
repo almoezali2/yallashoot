@@ -27,6 +27,11 @@
             border: 1px solid #b0c4de;
             border-radius: 8px;
             background-color: #fff;
+            transition: opacity 5s ease; /* تأثير التلاشي التدريجي */
+            caret-color: transparent; /* إخفاء مؤشر الكتابة */
+        }
+        input[type="text"].fade-out {
+            opacity: 0;
         }
         .result-container {
             display: flex;
@@ -40,7 +45,13 @@
             background-color: #e6f0fa;
             border-right: 1px solid #b0c4de;
             padding: 20px;
-            width: 30%;
+            width: 40%; /* زيادة عرض مربع الروابط */
+            font-size: 12px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .link-text {
+            margin-bottom: 15px;
         }
         .tweet-box {
             background-color: #f0f8ff;
@@ -48,13 +59,7 @@
             justify-content: center;
             align-items: center;
             min-height: 300px;
-            width: 70%;
-        }
-        .tweet-box iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 8px;
+            width: 60%; /* تقليل عرض مربع التغريدة */
         }
     </style>
 </head>
@@ -82,9 +87,19 @@
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script>
         document.getElementById('twitterUrl').addEventListener('input', function() {
-            const url = document.getElementById('twitterUrl').value.trim();
+            const urlInput = document.getElementById('twitterUrl');
+            const url = urlInput.value.trim();
             if (url !== '') {
                 displayTweet(url);
+
+                // بدء التلاشي فورًا عند إضافة الرابط
+                urlInput.classList.add('fade-out'); // إضافة فئة التلاشي مباشرة
+
+                // إعادة تعيين حقل الإدخال بعد انتهاء تأثير التلاشي
+                setTimeout(() => {
+                    urlInput.value = ''; // إفراغ حقل الإدخال
+                    urlInput.classList.remove('fade-out'); // إزالة فئة التلاشي
+                }, 2000); // 50 مللي ثانية = 5 ثوانٍ للتلاشي
             }
         });
 
@@ -112,9 +127,7 @@
                     tweetId,
                     tweetBox,
                     {
-                        lang: 'ar',
-                        width: 200, // ضبط عرض التغريدة
-                        height: 200 // ضبط ارتفاع التغريدة
+                        lang: 'ar'
                     }
                 ).then(function (el) {
                     console.log("تغريدة تم تضمينها بنجاح.");
