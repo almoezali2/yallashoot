@@ -1,145 +1,130 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>ملخص المباراة</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            direction: rtl;
-            margin: 0;
-            background-color: #f0f8ff;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        .input-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #b0c4de;
-            border-radius: 8px;
-            background-color: #fff;
-            transition: opacity 5s ease; /* تأثير التلاشي التدريجي */
-            caret-color: transparent; /* إخفاء مؤشر الكتابة */
-        }
-        input[type="text"].fade-out {
-            opacity: 0;
-        }
-        .result-container {
-            display: flex;
-            align-items: flex-start;
-            background-color: #f0f8ff;
-            border: 1px solid #b0c4de;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .link-box {
-            background-color: #e6f0fa;
-            border-right: 1px solid #b0c4de;
-            padding: 20px;
-            width: 40%; /* زيادة عرض مربع الروابط */
-            font-size: 12px;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-        .link-text {
-            margin-bottom: 15px;
-        }
-        .tweet-box {
-            background-color: #f0f8ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 300px;
-            width: 60%; /* تقليل عرض مربع التغريدة */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ملخص المباراة</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #e9ecef;
+    }
+    #container {
+      width: 450px;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    #tweetUrl {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    #extractButton {
+      padding: 15px;
+      width: 100%;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #extractButton:hover {
+      background-color: #0056b3;
+    }
+    #spinner {
+      display: none;
+      margin: 20px auto;
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #image-container {
+      margin-top: 20px;
+      display: none;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <script>
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </head>
 <body>
-
-    <div class="container">
-        <h1>ملخص المباراة</h1>
-        <div class="input-group">
-            <input type="text" id="twitterUrl" placeholder="أدخل رابط تغريدة تويتر">
-        </div>
-
-        <div class="result-container" id="resultContainer" style="display: none;">
-            <div class="link-box" id="linkBox">
-                <p class="link-text" id="linkTextEn"></p>
-                <p class="link-text" id="linkTextAr"></p>
-                <p class="link-text" id="linkTextEs"></p>
-                <p class="link-text" id="linkTextFr"></p>
-            </div>
-            <div class="tweet-box" id="tweetBox">
-                <!-- سيتم عرض تضمين التغريدة هنا -->
-            </div>
-        </div>
+  <div id="container">
+    <h2>ملخص المباراة</h2>
+    <input type="text" id="tweetUrl" placeholder="ادخل رابط تغريدة تويتر" />
+    <button id="extractButton">حفظ</button>
+    <div id="spinner"></div>
+    <div id="image-container">
+      <img id="extractedImage" src="" alt="الصورة المستخرجة">
     </div>
+  </div>
 
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-    <script>
-        document.getElementById('twitterUrl').addEventListener('input', function() {
-            const urlInput = document.getElementById('twitterUrl');
-            const url = urlInput.value.trim();
-            if (url !== '') {
-                displayTweet(url);
+  <script>
+    (function() {
+      const extractButton = document.getElementById('extractButton');
+      const tweetUrlInput = document.getElementById('tweetUrl');
+      const spinner = document.getElementById('spinner');
+      const imageContainer = document.getElementById('image-container');
+      const extractedImage = document.getElementById('extractedImage');
 
-                // بدء التلاشي فورًا عند إضافة الرابط
-                urlInput.classList.add('fade-out'); // إضافة فئة التلاشي مباشرة
-
-                // إعادة تعيين حقل الإدخال بعد انتهاء تأثير التلاشي
-                setTimeout(() => {
-                    urlInput.value = ''; // إفراغ حقل الإدخال
-                    urlInput.classList.remove('fade-out'); // إزالة فئة التلاشي
-                }, 2000); // 50 مللي ثانية = 5 ثوانٍ للتلاشي
-            }
-        });
-
-        function displayTweet(tweetUrl) {
-            document.getElementById('linkTextEn').textContent = tweetUrl;
-            document.getElementById('linkTextAr').textContent = tweetUrl;
-            document.getElementById('linkTextEs').textContent = tweetUrl;
-            document.getElementById('linkTextFr').textContent = tweetUrl;
-
-            document.getElementById('resultContainer').style.display = 'flex';
-            embedTweet(tweetUrl);
+      extractButton.addEventListener('click', async () => {
+        const tweetUrl = tweetUrlInput.value;
+        if (!tweetUrl) {
+          alert('الرجاء إدخال رابط تغريدة تويتر');
+          return;
         }
 
-        function embedTweet(tweetUrl) {
-            const tweetBox = document.getElementById('tweetBox');
-            tweetBox.innerHTML = ''; // مسح المحتوى السابق
+        spinner.style.display = 'block';
+        imageContainer.style.display = 'none';
 
-            // استخراج معرف التغريدة من الرابط
-            const tweetIdMatch = tweetUrl.match(/status\/(\d+)/);
-            if (tweetIdMatch && tweetIdMatch[1]) {
-                const tweetId = tweetIdMatch[1];
-
-                // استخدام مكتبة Twitter لتضمين التغريدة
-                twttr.widgets.createTweet(
-                    tweetId,
-                    tweetBox,
-                    {
-                        lang: 'ar'
-                    }
-                ).then(function (el) {
-                    console.log("تغريدة تم تضمينها بنجاح.");
-                }).catch(function (error) {
-                    console.error("خطأ في تضمين التغريدة:", error);
-                    alert("لم يتم تضمين التغريدة. تأكد من صحة الرابط.");
-                });
-            } else {
-                alert("رابط التغريدة غير صالح. يرجى إدخال رابط صحيح.");
-            }
+        try {
+          const apiKey = 'YOUR_SECRET_API_KEY'; // استخدم مفتاح سري للتحقق من الوصول
+          const response = await fetch(`https://nettle-prickle-september.glitch.me/extract-image?url=${encodeURIComponent(tweetUrl)}&key=${apiKey}`);
+          if (!response.ok) {
+            throw new Error('Failed to extract image');
+          }
+          const data = await response.json();
+          extractedImage.src = data.imageUrl;
+          imageContainer.style.display = 'block';
+        } catch (error) {
+          alert('حدث خطأ أثناء استخراج الصورة');
+          console.error(error);
+        } finally {
+          spinner.style.display = 'none';
         }
-    </script>
-
+      });
+    })();
+  </script>
 </body>
 </html>
