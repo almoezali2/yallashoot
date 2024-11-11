@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ملخص المباراة</title>
+  <title>إشعار وصورة من تويتر</title>
   <style>
     body {
       font-family: 'Cairo', sans-serif;
@@ -30,7 +30,7 @@
       border: 1px solid #ccc;
       font-size: 1em;
     }
-    #extractButton {
+    #extractButton, #sendNotificationButton {
       padding: 15px;
       width: 100%;
       background-color: #007bff;
@@ -40,8 +40,9 @@
       font-size: 1.1em;
       cursor: pointer;
       transition: background-color 0.3s;
+      margin-top: 10px;
     }
-    #extractButton:hover {
+    #extractButton:hover, #sendNotificationButton:hover {
       background-color: #0056b3;
     }
     #spinner {
@@ -67,17 +68,19 @@
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+    #pushForm {
+      display: none;
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
   </style>
-  <script>
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-        e.preventDefault();
-      }
-    });
-  </script>
 </head>
 <body>
   <div id="container">
@@ -88,6 +91,13 @@
     <div id="image-container">
       <img id="extractedImage" src="" alt="الصورة المستخرجة">
     </div>
+    <form id="pushForm">
+      <label for="title">عنوان الإشعار:</label><br>
+      <input type="text" id="title" name="title" value="هدف لريال مدريد"><br>
+      <label for="message">محتوى الإشعار:</label><br>
+      <input type="text" id="message" name="message" value="مبابي يسجل أول اهداف ريال مدريد ضد برشلونة"><br><br>
+      <button type="button" id="sendNotificationButton">إرسال الإشعار</button>
+    </form>
   </div>
 
   <script>
@@ -97,6 +107,8 @@
       const spinner = document.getElementById('spinner');
       const imageContainer = document.getElementById('image-container');
       const extractedImage = document.getElementById('extractedImage');
+      const pushForm = document.getElementById('pushForm');
+      const sendNotificationButton = document.getElementById('sendNotificationButton');
 
       extractButton.addEventListener('click', async () => {
         const tweetUrl = tweetUrlInput.value;
@@ -107,6 +119,7 @@
 
         spinner.style.display = 'block';
         imageContainer.style.display = 'none';
+        pushForm.style.display = 'none';
 
         try {
           const apiKey = 'YOUR_SECRET_API_KEY'; // استخدم مفتاح سري للتحقق من الوصول
@@ -117,12 +130,38 @@
           const data = await response.json();
           extractedImage.src = data.imageUrl;
           imageContainer.style.display = 'block';
+          pushForm.style.display = 'block';
         } catch (error) {
           alert('حدث خطأ أثناء استخراج الصورة');
           console.error(error);
         } finally {
           spinner.style.display = 'none';
         }
+      });
+
+      sendNotificationButton.addEventListener('click', () => {
+        const title = document.getElementById('title').value;
+        const message = document.getElementById('message').value;
+        const imageUrl = extractedImage.src;
+
+        fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": "NDg2YjE4NDEtODRiMS00ZGRkLThmYjktMWY3Yjk1NzNlOTY1" // أدخل مفتاح REST API الخاص بك هنا
+          },
+          body: JSON.stringify({
+            app_id: "188a1b48-3981-4d4e-9a11-052b58c30261", // أدخل App ID الخاص بك هنا
+            headings: { "en": title },
+            contents: { "en": message },
+            included_segments: ["All"], // يمكنك تخصيصه حسب الفئة المستهدفة
+            big_picture: imageUrl, // تضمين رابط الصورة المستخرجة
+            url: tweetUrl // تضمين رابط التغريدة
+          })
+        })
+        .then(response => response.json())
+        .then(data => alert("تم إرسال الإشعار بنجاح"))
+        .catch(error => alert("حدث خطأ أثناء الإرسال: " + error));
       });
     })();
   </script>
