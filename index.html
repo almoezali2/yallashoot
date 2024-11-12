@@ -3,29 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatGPT API Integration</title>
+  <title>ChatGPT API Integration with Image</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    textarea, input {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #response-output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    #image-preview {
+      margin-top: 10px;
+      max-width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h1>OpenAI Chat Interface</h1>
-  <textarea id="user-input" placeholder="أدخل سؤالك هنا..." rows="4" cols="50"></textarea>
-  <button id="send-button">إرسال</button>
+  <h1>ChatGPT API Integration with Image</h1>
+  <textarea id="user-input" placeholder="Enter your question here..." rows="4"></textarea>
+  <input type="file" id="image-input" accept="image/*">
+  <button id="send-button">Send</button>
   <div id="response-output"></div>
 
   <script>
-    const apiKey = 'sk-YOUR-NEW-API-KEY'; // قم بوضع مفتاح API الجديد هنا
+    const apiKey = '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'; // استبدل بمفتاح API الجديد
 
     document.getElementById('send-button').addEventListener('click', () => {
       const userInput = document.getElementById('user-input').value;
-      if (userInput) {
-        fetchOpenAIResponse(userInput);
+      const imageInput = document.getElementById('image-input').files[0];
+      
+      if (userInput || imageInput) {
+        if (imageInput) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const imageData = event.target.result;
+            fetchOpenAIResponse(userInput, imageData);
+          };
+          reader.readAsDataURL(imageInput);
+        } else {
+          fetchOpenAIResponse(userInput, null);
+        }
       }
     });
 
-    async function fetchOpenAIResponse(prompt) {
+    async function fetchOpenAIResponse(prompt, imageData) {
       const url = 'https://api.openai.com/v1/completions';
       const data = {
-        model: 'text-davinci-003', // يمكنك استخدام النموذج الذي تفضله
-        prompt: prompt,
+        model: 'text-davinci-003', // استخدم النموذج الذي تفضله
+        prompt: prompt + (imageData ? `\n[Image included]\n` : ""),
         max_tokens: 150,
         temperature: 0.7
       };
@@ -41,9 +86,13 @@
         });
         
         const responseData = await response.json();
-        document.getElementById('response-output').innerHTML = responseData.choices[0].text;
+        document.getElementById('response-output').innerHTML = `<p>${responseData.choices[0].text}</p>`;
+        if (imageData) {
+          document.getElementById('response-output').innerHTML += `<img id="image-preview" src="${imageData}" alt="Uploaded Image"/>`;
+        }
       } catch (error) {
         console.error('Error fetching response:', error);
+        document.getElementById('response-output').innerHTML = `<p style="color:red;">Error fetching response. Please try again.</p>`;
       }
     }
   </script>
