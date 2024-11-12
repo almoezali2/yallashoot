@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatGPT API Integration with Image</title>
+  <title>YallaShoot - ChatGPT API Integration with Image</title>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
   <style>
     body {
@@ -36,14 +36,14 @@
   </style>
 </head>
 <body>
-  <h1>ChatGPT API Integration with Image</h1>
-  <textarea id="user-input" placeholder="Enter your question here..." rows="4"></textarea>
+  <h1>YallaShoot - ChatGPT API Integration with Image</h1>
+  <textarea id="user-input" placeholder="أدخل سؤالك هنا..." rows="4"></textarea>
   <input type="file" id="image-input" accept="image/*">
-  <button id="send-button">Send</button>
+  <button id="send-button">إرسال</button>
   <div id="response-output"></div>
 
   <script>
-    const apiKey = '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'; // استبدل بمفتاح API الجديد
+    const apiKey = 'sk-YOUR-NEW-API-KEY'; // استبدل بمفتاح API الجديد
 
     document.getElementById('send-button').addEventListener('click', () => {
       const userInput = document.getElementById('user-input').value;
