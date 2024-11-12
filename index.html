@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChatGPT API Integration with Image</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -32,10 +33,6 @@
       padding: 10px;
       border: 1px solid #ccc;
     }
-    #image-preview {
-      margin-top: 10px;
-      max-width: 100%;
-    }
   </style>
 </head>
 <body>
@@ -54,23 +51,30 @@
       
       if (userInput || imageInput) {
         if (imageInput) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            const imageData = event.target.result;
-            fetchOpenAIResponse(userInput, imageData);
-          };
-          reader.readAsDataURL(imageInput);
+          Tesseract.recognize(
+            imageInput,
+            'eng',
+            {
+              logger: info => console.log(info) // معلومات حول عملية الاستخراج
+            }
+          ).then(({ data: { text } }) => {
+            console.log('Extracted text:', text);
+            fetchOpenAIResponse(userInput + '\n' + text);
+          }).catch(err => {
+            console.error('Error extracting text from image:', err);
+            document.getElementById('response-output').innerHTML = `<p style="color:red;">Error extracting text from image. Please try again.</p>`;
+          });
         } else {
-          fetchOpenAIResponse(userInput, null);
+          fetchOpenAIResponse(userInput);
         }
       }
     });
 
-    async function fetchOpenAIResponse(prompt, imageData) {
+    async function fetchOpenAIResponse(prompt) {
       const url = 'https://api.openai.com/v1/completions';
       const data = {
         model: 'text-davinci-003', // استخدم النموذج الذي تفضله
-        prompt: prompt + (imageData ? `\n[Image included]\n` : ""),
+        prompt: prompt,
         max_tokens: 150,
         temperature: 0.7
       };
@@ -87,9 +91,6 @@
         
         const responseData = await response.json();
         document.getElementById('response-output').innerHTML = `<p>${responseData.choices[0].text}</p>`;
-        if (imageData) {
-          document.getElementById('response-output').innerHTML += `<img id="image-preview" src="${imageData}" alt="Uploaded Image"/>`;
-        }
       } catch (error) {
         console.error('Error fetching response:', error);
         document.getElementById('response-output').innerHTML = `<p style="color:red;">Error fetching response. Please try again.</p>`;
