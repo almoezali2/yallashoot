@@ -156,7 +156,8 @@
             contents: { "en": message },
             included_segments: ["All"], // يمكنك تخصيصه حسب الفئة المستهدفة
             big_picture: imageUrl, // تضمين رابط الصورة المستخرجة
-            url: tweetUrl // تضمين رابط التغريدة
+            url: tweetUrl, // تضمين رابط التغريدة
+            android_sound: "notification_sound" // اسم ملف الصوت بدون الامتداد
           })
         })
         .then(response => response.json())
