@@ -24,7 +24,7 @@ app.post('/api/generate', async (req, res) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         },
       }
     );
@@ -36,6 +36,7 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+// تشغيل الخادم
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
