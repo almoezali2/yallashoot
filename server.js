@@ -9,6 +9,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
+// نقطة النهاية لاستقبال الطلبات
 app.post('/api/generate', async (req, res) => {
   const { prompt } = req.body;
 
@@ -36,6 +37,7 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+// تشغيل الخادم
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
