@@ -1,0 +1,10 @@
+.container {
+    text-align: center;
+    margin: 20px;
+}
+#output {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+    white-space: pre-line; /* يسمح بعرض النص على أسطر متعددة */
+}
