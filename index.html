@@ -1,19 +1,54 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استخراج النصوص من الصور (OCR)</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <h2>استخراج النصوص من الصور (OCR)</h2>
-        <input type="file" id="imageInput" accept="image/*" />
-        <button onclick="extractTextFromImageOCRSpace()">استخراج النص</button>
-        <p id="output">النص المستخرج سيظهر هنا...</p>
-    </div>
+import requests
+from PIL import Image
+import os
+import io
 
-    <script src="script.js"></script>
-</body>
-</html>
+def compress_image(input_image_path, output_image_path, max_size_kb):
+    img = Image.open(input_image_path)
+    quality = 95  # نبدأ بجودة عالية
+    while True:
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', quality=quality)
+        size_kb = buffer.tell() / 1024
+        if size_kb <= max_size_kb or quality <= 10:
+            break
+        quality -= 5
+    with open(output_image_path, 'wb') as f:
+        f.write(buffer.getvalue())
+
+def ocr_space_file(filename, api_key, language='ara'):
+    payload = {
+        'apikey': api_key,
+        'language': language,
+    }
+    with open(filename, 'rb') as f:
+        r = requests.post('https://api.ocr.space/parse/image',
+                          files={filename: f},
+                          data=payload)
+    return r.json()
+
+def main():
+    input_image_path = 'input.jpg'  # ضع مسار الصورة هنا
+    output_image_path = 'compressed.jpg'
+    max_size_kb = 1000  # 1 ميجابايت
+
+    # فحص حجم الصورة
+    image_size_kb = os.path.getsize(input_image_path) / 1024
+    if image_size_kb > 2000:
+        print('جاري تقليل حجم الصورة...')
+        compress_image(input_image_path, output_image_path, max_size_kb)
+        image_to_use = output_image_path
+    else:
+        image_to_use = input_image_path
+
+    api_key = 'K88508569788957'  # مفتاح API الخاص بك
+    result = ocr_space_file(image_to_use, api_key)
+    if result['IsErroredOnProcessing']:
+        print('خطأ:', result['ErrorMessage'])
+    else:
+        parsed_results = result['ParsedResults']
+        for parsed_result in parsed_results:
+            print('النص المستخرج:\n', parsed_result['ParsedText'])
+
+if __name__ == '__main__':
+    main()
